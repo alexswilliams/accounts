@@ -9,7 +9,7 @@ import me.alex.application.persistence.migrations.resetDb
 
 fun main() {
     loggingConfiguration { DEFAULT_CONSOLE() }
-    val config = DatabaseConfig("localhost", 5432, "accounts", "postgres", "test", "migrations_user", "test")
+    val config = LOCAL_DB_CONFIG
 
     resetDb(config)
     initDatabase(config)
