@@ -1,3 +1,5 @@
+secrets.tar.xz
+!secrets.tar.xz.asc
 secrets/
 **/node_modules/
 .gradle/

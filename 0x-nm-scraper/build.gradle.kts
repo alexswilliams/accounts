@@ -19,6 +19,7 @@ dependencies {
 
     runtimeOnly("org.postgresql:postgresql:42.3.3")
 
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
 
@@ -48,7 +49,7 @@ kotlin {
 }
 sourceSets {
     main {
-        resources.srcDirs("src/jvmMain/resources", "../secrets/02-data", "../secrets/03-resources")
+        resources.srcDirs("src/jvmMain/resources", "../secrets/0x-nm-scraper")
     }
     test {
         resources.srcDir("src/jvmTest/resources")
@@ -56,5 +57,9 @@ sourceSets {
 }
 
 application {
-    mainClass.set("me.alex.application.SqlMigrationsMain")
+    mainClass.set("me.alex.application.MainKt")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

@@ -2,8 +2,8 @@ import * as Client from '@aws-sdk/client-dynamodb'
 import * as fs from 'fs'
 import { default as creds } from '../secrets/02-credentials.mjs'
 
-if (!fs.existsSync('../secrets/02-accounts')) fs.mkdirSync('../secrets/02-accounts')
-if (!fs.existsSync('../secrets/02-transactions')) fs.mkdirSync('../secrets/02-transactions')
+if (!fs.existsSync('../secrets/02-data/accounts')) fs.mkdirSync('../secrets/02-data/accounts', { recursive: true })
+if (!fs.existsSync('../secrets/02-data/transactions')) fs.mkdirSync('../secrets/02-data/transactions', { recursive: true })
 
 const client = new Client.DynamoDB({
     region: 'eu-west-2',
@@ -11,7 +11,7 @@ const client = new Client.DynamoDB({
 })
 
 const accounts = await client.scan({ TableName: 'accounts' })
-fs.writeFileSync('../secrets/02-accounts/all.json', JSON.stringify(accounts.Items, null, 2), { encoding: 'utf8' })
+fs.writeFileSync('../secrets/02-data/accounts/all.json', JSON.stringify(accounts.Items, null, 2), { encoding: 'utf8' })
 
 const uploadedRecsRaw = await client.scan({ TableName: 'recs' })
 const uploadedRecs = Object.fromEntries(uploadedRecsRaw.Items.map(ddbItem => ([ddbItem.yearmonth.S, {
@@ -19,7 +19,7 @@ const uploadedRecs = Object.fromEntries(uploadedRecsRaw.Items.map(ddbItem => ([d
     totalCredits: Number(ddbItem.totalCredits.N),
     totalDebits: Number(ddbItem.totalDebits.N)
 }])))
-fs.writeFileSync('../secrets/02-recs-from-sheet.json', JSON.stringify(Object.entries(uploadedRecs), null, 2), { encoding: 'utf8' })
+fs.writeFileSync('../secrets/02-data/recs-from-sheet.json', JSON.stringify(Object.entries(uploadedRecs), null, 2), { encoding: 'utf8' })
 
 const replacer = RegExp('/', 'g')
 const perMonth = {}
@@ -32,8 +32,8 @@ do {
         const idFileSafe = item.id.S.replace(replacer, '_')
         const date = item.date.S
         const yearMonth = (/[0-9]{4}-[0-9]{2}-[0-9]{2}/.test(date)) ? date.substring(0, 7) : 'invalid-date'
-        if (!fs.existsSync('../secrets/02-transactions/' + yearMonth)) fs.mkdirSync('../secrets/02-transactions/' + yearMonth)
-        fs.writeFileSync(`../secrets/02-transactions/${yearMonth}/${date}--${idFileSafe}.json`, JSON.stringify(item, null, 2))
+        if (!fs.existsSync('../secrets/02-data/transactions/' + yearMonth)) fs.mkdirSync('../secrets/02-data/transactions/' + yearMonth, { recursive: true })
+        fs.writeFileSync(`../secrets/02-data/transactions/${yearMonth}/${date}--${idFileSafe}.json`, JSON.stringify(item, null, 2))
 
 
         const creditAmount = item.creditAmount?.N
@@ -53,7 +53,7 @@ do {
 
 console.log(perMonth)
 
-fs.writeFileSync('../secrets/02-recs-from-fetched.json', JSON.stringify(Object.entries(perMonth), null, 2), { encoding: 'utf8' })
+fs.writeFileSync('../secrets/02-data/recs-from-fetched.json', JSON.stringify(Object.entries(perMonth), null, 2), { encoding: 'utf8' })
 
 Object.entries(perMonth).forEach(([month, recData]) => {
     const fromSheet = uploadedRecs[month]

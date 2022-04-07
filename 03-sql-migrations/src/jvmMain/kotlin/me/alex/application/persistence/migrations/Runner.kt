@@ -2,19 +2,28 @@ package me.alex.application.persistence.migrations
 
 import io.klogging.NoCoLogging
 import me.alex.application.persistence.DatabaseConfig
+import me.alex.application.persistence.execute
 import me.alex.application.persistence.executeQuery
 import me.alex.application.persistence.executeUpdate
 import java.sql.Connection
 import java.sql.DriverManager
 
 abstract class Migration(val description: String) {
-    abstract fun migrate(conn: Connection)
+    abstract fun migrate(conn: Connection): Any
 }
+
+class MigrationFromResource(description: String, private val resourcePath: String) : Migration(description) {
+    override fun migrate(conn: Connection) = conn.execute(
+        javaClass.getResource(resourcePath)?.readText(Charsets.UTF_8) ?: throw Exception("Could not find resource")
+    )
+}
+
 
 object Runner : NoCoLogging {
     private val allMigrations: List<Migration> = listOf(
         Init,
-        V1InitialTableLayout,
+        MigrationFromResource("Initial Table Layout", "/migrations/V1-InitialTableLayout.sql"),
+        V2ImportGoogleSheetsData,
     )
 
     fun runMigrations(config: DatabaseConfig) {
