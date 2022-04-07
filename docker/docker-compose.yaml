@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  postgres:
+    build:
+      dockerfile: british-postgres.dockerfile
+    ports:
+      - published: 5432
+        target: 5432
+    environment:
+      POSTGRES_PASSWORD: test
