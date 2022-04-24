@@ -2,6 +2,7 @@ package io.github.alexswilliams.totp
 
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.TestFactory
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 internal class GenerateTest {
@@ -11,7 +12,7 @@ internal class GenerateTest {
     private val codeLengthFromRfc6238 = 8
 
     @TestFactory
-    fun `examples from RFC6238 validate`() = listOf(
+    fun `TOTP examples from RFC6238 validate`() = listOf(
         59L to "94287082",
         1111111109L to "07081804",
         1111111111L to "14050471",
@@ -26,4 +27,19 @@ internal class GenerateTest {
             assertEquals(expectedCode, actualCode)
         }
     }
+
+    @TestFactory
+    fun `base32 examples from RFC4648 are decoded`() =
+        listOf(
+            "MY======" to "f",
+            "MZXQ====" to "fo",
+            "MZXW6===" to "foo",
+            "MZXW6YQ=" to "foob",
+            "MZXW6YTB" to "fooba",
+            "MZXW6YTBOI======" to "foobar",
+        ).map { (input, expectedOutput) ->
+            DynamicTest.dynamicTest("$input decodes as $expectedOutput") {
+                assertContentEquals(expectedOutput.toByteArray(), base32ToBytes(input))
+            }
+        }
 }
