@@ -5,8 +5,20 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 
-fun <T> Connection.executeQuery(@Language("SQL") sql: String, body: (rs: ResultSet) -> T) =
-    this.prepareStatement(sql).use { it.executeQuery().use(body) }
+fun <T> Connection.executeQuery(@Language("SQL") sql: String, body: (rs: ResultSet) -> T): T =
+    this.prepareStatement(sql).use { it.executeQuery().use { rs -> body.invoke(rs) } }
+
+fun <T> Connection.executeQuery(
+    @Language("SQL") sql: String,
+    statementBody: (PreparedStatement) -> Unit,
+    body: (rs: ResultSet) -> T
+): T =
+    this.prepareStatement(sql).use {
+        statementBody(it)
+        it.executeQuery().use { rs ->
+            body.invoke(rs)
+        }
+    }
 
 fun Connection.execute(@Language("SQL") sql: String, statementBody: (PreparedStatement) -> Unit = {}) =
     this.prepareStatement(sql).use {

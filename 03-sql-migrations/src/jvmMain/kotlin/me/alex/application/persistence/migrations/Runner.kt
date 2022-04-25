@@ -23,7 +23,8 @@ object Runner : NoCoLogging {
     private val allMigrations: List<Migration> = listOf(
         Init,
         MigrationFromResource("Initial Table Layout", "/migrations/V1-InitialTableLayout.sql"),
-        V2ImportGoogleSheetsData,
+        V2InitialAccounts,
+        V3ImportSheetsData
     )
 
     fun runMigrations(config: DatabaseConfig) {
