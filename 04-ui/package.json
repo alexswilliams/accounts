@@ -1,0 +1,23 @@
+{
+  "name": "04-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "bundle-debug": "esbuild --bundle src/index.tsx --outfile=dist/index.js",
+    "bundle": "esbuild --bundle --minify --sourcemap --target=firefox100 --legal-comments=none src/index.tsx --outfile=dist/index.js",
+    "start": "esbuild --target=firefox100 src/index.tsx --servedir=public --outdir=public/js --bundle",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.5",
+    "esbuild": "^0.14.41",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "typescript": "^4.7.2"
+  }
+}
