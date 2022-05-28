@@ -24,7 +24,8 @@ object Runner : NoCoLogging {
         Init,
         MigrationFromResource("Initial Table Layout", "/migrations/V1-InitialTableLayout.sql"),
         V2InitialAccounts,
-        V3ImportSheetsData
+        V3ImportSheetsData,
+        MigrationFromResource("Build Txn Pairing Table", "/migrations/V4-BuildTransactionPairingTable.sql")
     )
 
     fun runMigrations(config: DatabaseConfig) {

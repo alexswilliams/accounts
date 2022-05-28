@@ -42,6 +42,12 @@ object V3ImportSheetsData : Migration("Import data dumped from sheets via dynamo
         val creditAmount = txnBody["creditAmount"]?.dynamoNumberField()
         val debitAmount = txnBody["debitAmount"]?.dynamoNumberField()
 
+        val date = txnBody["date"]?.dynamoStringField()
+        val rowNumber = txnBody["rowNum"]?.dynamoNumberField()?.toInt()
+        val opposingHash = // the matching in step 1 wasn't perfect... neither was the source data.
+            if (date == "2015-08-04" && rowNumber == 7) null
+            else if (date == "2015-08-15" && rowNumber == 136) "Dt0s_t70OkmJ0MmYn9FuVV45ALQ6z7mHtjMxUdK0gHo="
+            else txnBody["opposingTransactionId"]?.dynamoStringField()
 
         conn.executeUpdate(
             """
@@ -69,13 +75,9 @@ VALUES (?::uuid, ?::uuid, ?::uuid, ?, ?::transaction_direction, ?::currency_code
             it.setString(12, txnBody["typeCode"]?.dynamoStringField())
             it.setString(13, txnBody["type"]?.dynamoStringField())
             it.setString(14, txnBody["id"]?.dynamoStringField())
-            it.setString(15, txnBody["opposingId"]?.dynamoStringField())
+            it.setString(15, opposingHash)
             it.setLong(16, txnBody["runningBalanceHint"]?.dynamoNumberField() ?: -999999999L)
-            it.setInt(
-                17,
-                txnBody["rowNum"]?.dynamoNumberField()?.toInt() ?: throw Exception("Txn has no row: $filepath")
-            )
-
+            it.setInt(17, rowNumber ?: throw Exception("Txn has no row: $filepath"))
         }
     }
 
