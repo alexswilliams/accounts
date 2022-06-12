@@ -1,7 +1,7 @@
-val kotlinVersion = "1.6.20"
+val kotlinVersion = "1.7.0"
 
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.0"
     application
 }
 
@@ -14,12 +14,7 @@ repositories {
 
 
 dependencies {
-    implementation("io.klogging:klogging-jvm:0.4.5")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-
-    runtimeOnly("org.postgresql:postgresql:42.3.3")
-
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
 
@@ -34,7 +29,6 @@ tasks {
 
 kotlin {
     jvmToolchain {
-        check(this is JavaToolchainSpec)
         languageVersion.set(JavaLanguageVersion.of(17))
     }
 

@@ -1,14 +1,16 @@
 package me.alex.application.persistence.migrations
 
-import io.klogging.NoCoLogging
 import me.alex.application.persistence.DatabaseConfig
 import me.alex.application.persistence.execute
 import me.alex.application.persistence.executeUpdate
+import mu.KotlinLogging
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.SQLException
 
-object Init : Migration("Database Bootstrap"), NoCoLogging {
+object Init : Migration("Database Bootstrap") {
+    internal val logger = KotlinLogging.logger { }
+
     override fun migrate(conn: Connection) {
         throw Exception("Init is special because it does odd things and must not be run as a general migration")
     }

@@ -1,10 +1,10 @@
 package me.alex.application.persistence.migrations
 
-import io.klogging.NoCoLogging
 import me.alex.application.persistence.DatabaseConfig
 import me.alex.application.persistence.execute
 import me.alex.application.persistence.executeQuery
 import me.alex.application.persistence.executeUpdate
+import mu.KLogging
 import java.sql.Connection
 import java.sql.DriverManager
 
@@ -19,7 +19,7 @@ class MigrationFromResource(description: String, private val resourcePath: Strin
 }
 
 
-object Runner : NoCoLogging {
+object Runner : KLogging() {
     private val allMigrations: List<Migration> = listOf(
         Init,
         MigrationFromResource("Initial Table Layout", "/migrations/V1-InitialTableLayout.sql"),

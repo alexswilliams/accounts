@@ -1,6 +1,5 @@
 package me.alex.application.persistence.migrations
 
-import io.klogging.NoCoLogging
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -10,7 +9,7 @@ import me.alex.application.persistence.executeUpdate
 import java.sql.Connection
 import java.util.*
 
-object V2InitialAccounts : Migration("Import initial accounts"), NoCoLogging {
+object V2InitialAccounts : Migration("Import initial accounts") {
     override fun migrate(conn: Connection) {
         conn.execute("BEGIN TRANSACTION")
         importAccounts(conn)

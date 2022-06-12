@@ -1,32 +1,30 @@
 package me.alex.application.persistence.migrations
 
-import io.klogging.NoCoLogging
 import kotlinx.serialization.json.*
 import me.alex.application.persistence.execute
 import me.alex.application.persistence.executeQuery
 import me.alex.application.persistence.executeUpdate
+import mu.KotlinLogging
+import org.apache.commons.compress.archivers.tar.TarFile
 import java.sql.Connection
 import java.util.*
 
-object V3ImportSheetsData : Migration("Import data dumped from sheets via dynamodb"), NoCoLogging {
+object V3ImportSheetsData : Migration("Import data dumped from sheets via dynamodb") {
+    private val logger = KotlinLogging.logger { }
+
     override fun migrate(conn: Connection) {
-        val months = javaClass.getResourceAsStream("/transactions/").use { stream ->
-            stream!!.bufferedReader().use { it.readLines() }
-        }
-        val txnFiles = months.flatMap { month ->
-            javaClass.getResourceAsStream("/transactions/$month/").use { stream ->
-                stream?.bufferedReader()?.use { it.readLines() } ?: emptyList()
-            }.map { filename -> "/transactions/$month/$filename" }
-        }
+        val transactionTar = javaClass.getResourceAsStream("/transactions.tar")?.readAllBytes()
+            ?: throw Exception("Could not find Transactions tape archive")
+        val transactions = TarFile(transactionTar)
+        val txnFiles = transactions.entries.filter { it.isFile }
+
         logger.info("Files: ${txnFiles.size}")
 
         conn.execute("BEGIN TRANSACTION")
-        txnFiles.forEach { filepath ->
-            val txnBody = Json.parseToJsonElement(
-                javaClass.getResource(filepath)?.readText(Charsets.UTF_8)
-                    ?: throw Exception("Could not read transaction $filepath")
-            )
-            importTransaction(conn, txnBody.jsonObject, filepath)
+        txnFiles.forEach { tarFileEntry ->
+            val contents = transactions.getInputStream(tarFileEntry).readAllBytes().toString(Charsets.UTF_8)
+            val txnBody = Json.parseToJsonElement(contents)
+            importTransaction(conn, txnBody.jsonObject, tarFileEntry.name)
         }
         conn.execute("COMMIT")
     }
