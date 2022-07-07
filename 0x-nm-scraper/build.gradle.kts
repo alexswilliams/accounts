@@ -1,7 +1,7 @@
 val kotlinVersion = "1.7.0"
 
 plugins {
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm")
     application
 }
 
@@ -14,8 +14,8 @@ repositories {
 
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+    testImplementation(Testing.junit.jupiter)
+    testImplementation(Kotlin.test.junit)
 }
 
 tasks {

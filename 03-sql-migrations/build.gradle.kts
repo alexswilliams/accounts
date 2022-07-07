@@ -1,7 +1,7 @@
 val kotlinVersion = "1.7.0"
 
 plugins {
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm")
     application
 }
 
@@ -14,15 +14,15 @@ repositories {
 
 
 dependencies {
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.20")
-    runtimeOnly("ch.qos.logback:logback-classic:1.3.0-alpha16")
+    implementation("io.github.microutils:kotlin-logging-jvm:_")
+    runtimeOnly("ch.qos.logback:logback-classic:_")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.3")
-    implementation("org.apache.commons:commons-compress:1.21")
+    implementation(KotlinX.serialization.json)
+    implementation("org.apache.commons:commons-compress:_")
 
-    runtimeOnly("org.postgresql:postgresql:42.4.0")
+    runtimeOnly("org.postgresql:postgresql:_")
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
+    testImplementation(Kotlin.test.junit)
 }
 
 tasks {
