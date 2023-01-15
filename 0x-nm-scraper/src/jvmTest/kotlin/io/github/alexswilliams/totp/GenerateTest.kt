@@ -1,7 +1,9 @@
 package io.github.alexswilliams.totp
 
 import org.junit.jupiter.api.DynamicTest
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
+import java.time.Instant
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
@@ -31,15 +33,21 @@ internal class GenerateTest {
     @TestFactory
     fun `base32 examples from RFC4648 are decoded`() =
         listOf(
-            "MY======" to "f",
-            "MZXQ====" to "fo",
-            "MZXW6===" to "foo",
-            "MZXW6YQ=" to "foob",
-            "MZXW6YTB" to "fooba",
-            "MZXW6YTBOI======" to "foobar",
+            "MY======" to "f".toByteArray(),
+            "MZXQ====" to "fo".toByteArray(),
+            "MZXW6===" to "foo".toByteArray(),
+            "MZXW6YQ=" to "foob".toByteArray(),
+            "MZXW6YTB" to "fooba".toByteArray(),
+            "MZXW6YTBOI======" to "foobar".toByteArray(),
+            "X52VNFIS" to byteArrayOf(0xbf.toByte(), 0x75, 0x56, 0x95.toByte(), 0x12),
         ).map { (input, expectedOutput) ->
             DynamicTest.dynamicTest("$input decodes as $expectedOutput") {
-                assertContentEquals(expectedOutput.toByteArray(), base32ToBytes(input))
+                assertContentEquals(expectedOutput, base32ToBytes(input))
             }
         }
+
+    @Test
+    fun `live test`() {
+        println(generateTOTP(base32ToBytes("ME3WKMZTMEZTAZRY"), Instant.now().epochSecond / 30, 6))
+    }
 }

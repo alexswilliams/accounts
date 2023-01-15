@@ -1,4 +1,4 @@
-val kotlinVersion = "1.7.0"
+val kotlinVersion = "1.8.0"
 
 plugins {
     kotlin("jvm")
@@ -20,16 +20,16 @@ dependencies {
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = "19"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = "19"
     }
 }
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(19))
     }
 
     sourceSets {
