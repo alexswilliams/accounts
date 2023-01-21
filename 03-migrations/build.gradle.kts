@@ -37,12 +37,12 @@ kotlin {
 
 sourceSets {
     main {
-        kotlin.setSrcDirs(setOf("src/jvmMain/kotlin"))
-        resources.setSrcDirs(setOf("src/jvmMain/resources", "../accounts-data/initial-transactions"))
+        kotlin.setSrcDirs(setOf("src/main/kotlin"))
+        resources.setSrcDirs(setOf("src/main/resources", "../accounts-data/from-google-sheets"))
     }
     test {
-        kotlin.setSrcDirs(setOf("src/jvmTest/kotlin"))
-        resources.setSrcDirs(setOf("src/jvmTest/resources"))
+        kotlin.setSrcDirs(setOf("src/test/kotlin"))
+        resources.setSrcDirs(setOf("src/test/resources"))
     }
 }
 

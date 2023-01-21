@@ -31,12 +31,12 @@ kotlin {
 
 sourceSets {
     main {
-        kotlin.setSrcDirs(setOf("src/jvmMain/kotlin"))
-        resources.setSrcDirs(setOf("src/jvmMain/resources", "../secrets/0x-nm-scraper"))
+        kotlin.setSrcDirs(setOf("src/main/kotlin"))
+        resources.setSrcDirs(setOf("src/main/resources", "../secrets/0x-nm-scraper"))
     }
     test {
-        kotlin.setSrcDirs(setOf("src/jvmTest/kotlin"))
-        resources.setSrcDirs(setOf("src/jvmTest/resources"))
+        kotlin.setSrcDirs(setOf("src/test/kotlin"))
+        resources.setSrcDirs(setOf("src/test/resources"))
     }
 }
 

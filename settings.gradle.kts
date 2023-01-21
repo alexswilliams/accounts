@@ -21,5 +21,5 @@ refreshVersions {
 rootProject.name = "accounts"
 
 include("03-accounts-server")
-include("03-sql-migrations")
+include("03-migrations")
 include("0x-nm-scraper")

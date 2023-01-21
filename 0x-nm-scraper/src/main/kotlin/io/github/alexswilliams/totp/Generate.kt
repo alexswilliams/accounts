@@ -11,7 +11,6 @@ fun generateTOTP(seed: ByteArray, steps: Long, codeLength: Int): String =
         .let { it.intAtPosition(it.last4Bits()) }
         .and(0x7fffffff)
         .lastDigits(codeLength)
-        .also { println(steps) }
 
 private fun hmacSha(key: ByteArray, text: ByteArray) =
     Mac.getInstance("HmacSHA1").apply { init(SecretKeySpec(key, "RAW")) }.doFinal(text)
