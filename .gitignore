@@ -5,4 +5,5 @@ secrets/
 .gradle/
 .idea/
 build/
+!gradle/wrapper/gradle-wrapper.jar
 **/dist/

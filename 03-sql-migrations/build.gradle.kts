@@ -1,5 +1,3 @@
-val kotlinVersion = "1.8.0"
-
 plugins {
     kotlin("jvm")
     application
@@ -50,7 +48,7 @@ kotlin {
 }
 sourceSets {
     main {
-        resources.srcDirs("src/jvmMain/resources", "../secrets/02-data", "../secrets/03-resources")
+        resources.srcDirs("src/jvmMain/resources", "../accounts-data/initial-transactions")
     }
     test {
         resources.srcDir("src/jvmTest/resources")
