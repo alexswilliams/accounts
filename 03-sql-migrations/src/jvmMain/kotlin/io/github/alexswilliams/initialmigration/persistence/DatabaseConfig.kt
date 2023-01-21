@@ -1,4 +1,4 @@
-package me.alex.application.persistence
+package io.github.alexswilliams.initialmigration.persistence
 
 import java.util.*
 

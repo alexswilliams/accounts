@@ -1,4 +1,4 @@
-package me.alex.application.persistence
+package io.github.alexswilliams.initialmigration.persistence
 
 import org.intellij.lang.annotations.Language
 import java.sql.Connection

@@ -1,11 +1,11 @@
-package me.alex.application.persistence.migrations
+package io.github.alexswilliams.initialmigration.persistence.migrations
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import me.alex.application.persistence.execute
-import me.alex.application.persistence.executeUpdate
+import io.github.alexswilliams.initialmigration.persistence.execute
+import io.github.alexswilliams.initialmigration.persistence.executeUpdate
 import java.sql.Connection
 import java.util.*
 

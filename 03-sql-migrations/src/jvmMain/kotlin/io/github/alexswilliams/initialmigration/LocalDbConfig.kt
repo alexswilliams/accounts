@@ -1,6 +1,6 @@
-package me.alex.application
+package io.github.alexswilliams.initialmigration
 
-import me.alex.application.persistence.DatabaseConfig
+import io.github.alexswilliams.initialmigration.persistence.DatabaseConfig
 
 val LOCAL_DB_CONFIG = DatabaseConfig(
     host = "localhost",

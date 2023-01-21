@@ -1,8 +1,8 @@
-package me.alex.application.persistence.migrations
+package io.github.alexswilliams.initialmigration.persistence.migrations
 
-import me.alex.application.persistence.DatabaseConfig
-import me.alex.application.persistence.execute
-import me.alex.application.persistence.executeUpdate
+import io.github.alexswilliams.initialmigration.persistence.DatabaseConfig
+import io.github.alexswilliams.initialmigration.persistence.execute
+import io.github.alexswilliams.initialmigration.persistence.executeUpdate
 import mu.KotlinLogging
 import java.sql.Connection
 import java.sql.DriverManager

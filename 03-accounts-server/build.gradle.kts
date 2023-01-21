@@ -1,12 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+@Suppress("DSL_SCOPE_VIOLATION") // suppress intellij 2022.3 bug
 plugins {
-    kotlin("jvm")
-    id("io.ktor.plugin")
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.ktor)
 }
 
 group = "io.github.alexswilliams"
-version = "0.0.1"
+version = "1.0.0"
+
 application {
     mainClass.set("io.github.alexswilliams.ApplicationKt")
 
@@ -19,36 +21,42 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm:_")
-    implementation("io.ktor:ktor-server-host-common-jvm:_")
-    implementation("io.ktor:ktor-server-cors-jvm:_")
-    implementation("io.ktor:ktor-server-call-logging-jvm:_")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:_")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:_")
-    implementation("io.ktor:ktor-server-netty-jvm:_")
-    implementation("ch.qos.logback:logback-classic:_")
-    testImplementation("io.ktor:ktor-server-tests-jvm:_")
-    testImplementation(Kotlin.test.junit)
+    implementation(libs.ktor.server.core.jvm)
+    implementation(libs.ktor.server.host.common.jvm)
+    implementation(libs.ktor.server.cors.jvm)
+    implementation(libs.ktor.server.call.logging.jvm)
+    implementation(libs.ktor.server.content.negotiation.jvm)
+    implementation(libs.ktor.serialization.kotlinx.json.jvm)
+    implementation(libs.ktor.server.netty.jvm)
+    implementation(libs.logback.classic)
+    testImplementation(libs.ktor.server.tests.jvm)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.test)
 }
 
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
-    }
-}
+val jvmVersion: String by project
 tasks.withType<KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = jvmVersion
+    }
+}
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(jvmVersion))
     }
 }
 
 sourceSets {
     main {
-        kotlin.srcDirs("src/main/kotlin")
-        resources.srcDirs("src/main/resources")
+        kotlin.setSrcDirs(setOf("src/main/kotlin"))
+        resources.setSrcDirs(setOf("src/main/resources"))
     }
     test {
-        kotlin.srcDirs("src/test/kotlin")
-        resources.srcDirs("src/test/resources")
+        kotlin.setSrcDirs(setOf("src/test/kotlin"))
+        resources.setSrcDirs(setOf("src/test/resources"))
     }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

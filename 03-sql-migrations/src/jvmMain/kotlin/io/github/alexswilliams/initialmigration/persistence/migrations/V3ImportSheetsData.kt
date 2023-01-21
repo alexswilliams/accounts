@@ -1,9 +1,9 @@
-package me.alex.application.persistence.migrations
+package io.github.alexswilliams.initialmigration.persistence.migrations
 
 import kotlinx.serialization.json.*
-import me.alex.application.persistence.execute
-import me.alex.application.persistence.executeQuery
-import me.alex.application.persistence.executeUpdate
+import io.github.alexswilliams.initialmigration.persistence.execute
+import io.github.alexswilliams.initialmigration.persistence.executeQuery
+import io.github.alexswilliams.initialmigration.persistence.executeUpdate
 import mu.KotlinLogging
 import org.apache.commons.compress.archivers.tar.TarFile
 import java.sql.Connection

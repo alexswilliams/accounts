@@ -1,60 +1,51 @@
+@Suppress("DSL_SCOPE_VIOLATION") // suppress intellij 2022.3 bug
 plugins {
-    kotlin("jvm")
-    application
+    alias(libs.plugins.kotlin)
 }
 
-group = "me.alex"
-version = "1.0-SNAPSHOT"
+group = "io.github.alexswilliams"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
 }
 
-
 dependencies {
-    implementation("io.github.microutils:kotlin-logging-jvm:_")
-    runtimeOnly("ch.qos.logback:logback-classic:_")
+    implementation(libs.kotlin.logging.jvm)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.commons.compress)
 
-    implementation(KotlinX.serialization.json)
-    implementation("org.apache.commons:commons-compress:_")
+    runtimeOnly(libs.logback.classic)
+    runtimeOnly(libs.postgresql)
 
-    runtimeOnly("org.postgresql:postgresql:_")
-
-    testImplementation(Kotlin.test.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.kotlin.test)
 }
 
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "19"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "19"
+
+val jvmVersion: String by project
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = jvmVersion
     }
 }
-
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(19))
-    }
-
-    sourceSets {
-        main {
-            kotlin.srcDir("src/jvmMain/kotlin")
-        }
-        test {
-            kotlin.srcDir("src/jvmTest/kotlin")
-        }
+        languageVersion.set(JavaLanguageVersion.of(jvmVersion))
     }
 }
+
 sourceSets {
     main {
-        resources.srcDirs("src/jvmMain/resources", "../accounts-data/initial-transactions")
+        kotlin.setSrcDirs(setOf("src/jvmMain/kotlin"))
+        resources.setSrcDirs(setOf("src/jvmMain/resources", "../accounts-data/initial-transactions"))
     }
     test {
-        resources.srcDir("src/jvmTest/resources")
+        kotlin.setSrcDirs(setOf("src/jvmTest/kotlin"))
+        resources.setSrcDirs(setOf("src/jvmTest/resources"))
     }
 }
 
-application {
-    mainClass.set("me.alex.application.SqlMigrationsMain")
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
