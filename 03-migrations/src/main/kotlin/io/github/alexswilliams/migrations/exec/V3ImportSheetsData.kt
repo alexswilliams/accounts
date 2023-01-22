@@ -10,7 +10,6 @@ import mu.KotlinLogging
 import org.apache.commons.compress.archivers.tar.TarFile
 import java.io.File
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -55,22 +54,27 @@ object V3ImportSheetsData : Migration {
                             ?: throw Exception("No account could be found for $filePath with sheet id $sheetId"))
             }
         }
+        val transfers = parsedTransactions.filter { it["opposingHashInSheet"] != null }
         val txnWithOpposingIds = parsedTransactions.map { txn ->
             if (txn["opposingHashInSheet"] == null) txn
-            else txn.plus(
-                "opposingId" to
-                        parsedTransactions.first { other ->
-                            other["hashInSheet"] as String == txn["opposingHashInSheet"] as String
-                        }["id"]
-            )
+            else txn.plus("opposingId" to transfers.first { other -> other["hashInSheet"] as String == txn["opposingHashInSheet"] as String }["id"])
         }
+        // check they're 1-to-1 matches
+        val keyedTransfers = txnWithOpposingIds.filter { it["opposingHashInSheet"] != null }.associateBy { it["id"] }
+        keyedTransfers.values.forEach { txn ->
+            val otherId = txn["opposingId"]
+            val otherTxn = keyedTransfers[otherId]!!
+            if (txn["id"] != otherTxn["opposingId"]) logger.error { "Txn.id != other.opposingId (this=${txn["id"]}, other.opposingId=${otherTxn["opposingId"]}" }
+            if (txn["opposingId"] != otherTxn["id"]) logger.error { "Txn.opposingId != other.id (this.opposingId=${txn["opposingId"]}, other=${otherTxn["id"]}" }
+        }
+
 
         val transactionDataDirectory: String by props
         txnWithOpposingIds
             .groupBy { it["accountId"] as UUID }
             .forEach { (account, txns) ->
                 val file = Paths.get(transactionDataDirectory, "$account.json").toFile()
-                mapper.writeValue(file, txns)
+                mapper.writeValue(file, txns.sortedBy { (it["transactionDate"] as String) + "T" + (it["transactionTime"] as String) })
             }
 
         TODO()
@@ -110,8 +114,8 @@ object V3ImportSheetsData : Migration {
         val creditAmount = txnBody["creditAmount"]?.dynamoNumber()
         val debitAmount = txnBody["debitAmount"]?.dynamoNumber()
 
-        val date = txnBody["date"]?.dynamoString()
-        val rowNumber = txnBody["rowNum"]?.dynamoNumber()?.toInt()
+        val date = txnBody["date"]!!.dynamoString()
+        val rowNumber = txnBody["rowNum"]!!.dynamoNumber()?.toInt()
         val opposingHash = // the matching in step 1 wasn't perfect... neither was the source data.
             if (date == "2015-08-04" && rowNumber == 7) null
             else if (date == "2015-08-15" && rowNumber == 136) "Dt0s_t70OkmJ0MmYn9FuVV45ALQ6z7mHtjMxUdK0gHo="
@@ -127,15 +131,15 @@ object V3ImportSheetsData : Migration {
                     ?: (-99999999999L).also { logger.warn("Txn has no amount: $filepath") }).movePointLeft(2)
                 .toString(),
             "direction" to if (creditAmount != null) "CREDIT" else "DEBIT",
-            "currency" to txnBody["currency"]?.dynamoString(),
-            "transactionDate" to txnBody["date"]?.dynamoString(),
-            "transactionTime" to txnBody["time"]?.dynamoString(),
+            "currency" to txnBody["currency"]!!.dynamoString(),
+            "transactionDate" to date,
+            "transactionTime" to txnBody["time"]!!.dynamoString(),
             "accountInSheet" to txnBody["sheetIdentifier"]?.dynamoString(),
             "categoryInSheet" to null,
             "descriptionInSheet" to description,
-            "typeCodeInSheet" to txnBody["typeCode"]?.dynamoString(),
-            "typeInSheet" to txnBody["type"]?.dynamoString(),
-            "hashInSheet" to txnBody["id"]?.dynamoString(),
+            "typeCodeInSheet" to txnBody["typeCode"]!!.dynamoString(),
+            "typeInSheet" to txnBody["type"]!!.dynamoString(),
+            "hashInSheet" to txnBody["id"]!!.dynamoString(),
             "opposingHashInSheet" to opposingHash,
             "runningBalanceHint" to BigDecimal(
                 txnBody["runningBalanceHint"]?.dynamoNumber() ?: -999999999L
