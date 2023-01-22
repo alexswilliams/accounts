@@ -16,7 +16,6 @@ dependencies {
     implementation(libs.commons.compress)
 
     runtimeOnly(libs.logback.classic)
-    runtimeOnly(libs.postgresql)
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlin.test)

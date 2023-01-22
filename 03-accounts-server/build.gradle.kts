@@ -10,7 +10,7 @@ group = "io.github.alexswilliams"
 version = "1.0.0"
 
 application {
-    mainClass.set("io.github.alexswilliams.ApplicationKt")
+    mainClass.set("io.github.alexswilliams.ServerMainKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -26,9 +26,13 @@ dependencies {
     implementation(libs.ktor.server.cors.jvm)
     implementation(libs.ktor.server.call.logging.jvm)
     implementation(libs.ktor.server.content.negotiation.jvm)
-    implementation(libs.ktor.serialization.kotlinx.json.jvm)
+    implementation(libs.ktor.serialization.jackson.jvm)
     implementation(libs.ktor.server.netty.jvm)
-    implementation(libs.logback.classic)
+    implementation(libs.jackson)
+    implementation(libs.jackson.jsr310)
+
+    runtimeOnly(libs.logback.classic)
+
     testImplementation(libs.ktor.server.tests.jvm)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.kotlin.test)
