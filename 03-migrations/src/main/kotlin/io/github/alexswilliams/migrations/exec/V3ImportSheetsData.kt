@@ -1,5 +1,6 @@
 package io.github.alexswilliams.migrations.exec
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.JsonNode
@@ -19,7 +20,7 @@ import kotlin.io.path.Path
 
 
 object V3ImportSheetsData : Migration {
-    private val logger = KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger("v3")
     override val description: String
         get() = "Import transactions from google sheets data"
 
@@ -32,6 +33,7 @@ object V3ImportSheetsData : Migration {
                     .withArrayIndenter(DefaultIndenter())
             )
             .enable(SerializationFeature.INDENT_OUTPUT, SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
     }
 
     override fun migrate(props: Properties) {
@@ -82,10 +84,8 @@ object V3ImportSheetsData : Migration {
                 val file = Paths.get(transactionDataDirectory, "$account.json").toFile()
                 mapper.writeValue(
                     file,
-                    txns.sortedBy { (it["transactionDate"] as String) + "T" + (it["transactionTime"] as String) })
+                    txns.sortedWith(compareBy ({ (it["transactionInstant"] as String) }, { it["rowInSheet"] as Int })))
             }
-
-        TODO()
     }
 
     private fun readAccounts(props: Properties): List<Map<String, Any>> {
@@ -115,6 +115,14 @@ object V3ImportSheetsData : Migration {
     ): Map<String, Any?>? {
         val description = txnBody["description"]?.dynamoString().orEmpty()
         if ("No Activity This Month" in description) return null
+        if ("Contactless failed, please try chip & PIN" in description) return null
+        if ("Declined as you don't have sufficient funds on your card" in description) return null
+        if ("Declined: Insufficient funds" in description) return null
+        if ("Insufficient Funds" in description) return null
+        if ("Declined - not enough money" in description) return null
+        if ("Wrong CV2" in description) return null
+        if ("Declined because your card is frozen" in description) return null
+        if ("PIN change" in description) return null
 
         val sheetIdentifier = txnBody["accountId"]?.dynamoString()
             ?: throw Exception("Transaction $filepath not linked to account")
@@ -136,12 +144,11 @@ object V3ImportSheetsData : Migration {
             "amount" to BigDecimal(
                 creditAmount
                     ?: debitAmount
-                    ?: (-99999999999L).also { logger.warn("Txn has no amount: $filepath") }).movePointLeft(2)
+                    ?: (-99999999999L).also { logger.warn("Txn has no amount: $filepath ($description)") }).movePointLeft(2)
                 .toString(),
             "direction" to if (creditAmount != null) "CREDIT" else "DEBIT",
             "currency" to txnBody["currency"]!!.dynamoString(),
-            "transactionDate" to date,
-            "transactionTime" to txnBody["time"]!!.dynamoString(),
+            "transactionInstant" to date + "T" + txnBody["time"]!!.dynamoString(),
             "accountInSheet" to txnBody["sheetIdentifier"]?.dynamoString(),
             "categoryInSheet" to null,
             "descriptionInSheet" to description,
