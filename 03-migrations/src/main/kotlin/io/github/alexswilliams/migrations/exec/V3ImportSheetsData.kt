@@ -1,12 +1,6 @@
 package io.github.alexswilliams.migrations.exec
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.util.DefaultIndenter
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.alexswilliams.migrations.Migration
 import mu.KotlinLogging
 import org.apache.commons.compress.archivers.tar.TarFile
@@ -24,17 +18,6 @@ object V3ImportSheetsData : Migration {
     override val description: String
         get() = "Import transactions from google sheets data"
 
-    private val mapper: ObjectMapper by lazy {
-        jacksonObjectMapper()
-            .setDefaultPrettyPrinter(
-                DefaultPrettyPrinter()
-                    .withoutSpacesInObjectEntries()
-                    .withObjectIndenter(DefaultIndenter())
-                    .withArrayIndenter(DefaultIndenter())
-            )
-            .enable(SerializationFeature.INDENT_OUTPUT, SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    }
 
     override fun migrate(props: Properties) {
         val sheetsTransactionsTarball: String by props
@@ -52,10 +35,10 @@ object V3ImportSheetsData : Migration {
 
         val parsedTransactions = txnFileList.mapNotNull { tarFileEntry ->
             val contents = transactions.getInputStream(tarFileEntry).readAllBytes().toString(Charsets.UTF_8)
-            val txnBody = mapper.readTree(contents)
+            val txnBody = Migration.mapper.readTree(contents)
             mapTransaction(txnBody, tarFileEntry.name) { sheetId, filePath ->
                 val card = allCards.find { it["sheetId"] as String == sheetId }
-                val account = allAccounts.find { it["sheetId"] as String == sheetId }
+                val account = allAccounts.find { it["sheetId"] as String? == sheetId }
                 card?.let { UUID.fromString(it["id"] as String) } to
                         (card?.let { UUID.fromString(it["accountId"] as String) }
                             ?: account?.let { UUID.fromString(it["id"] as String) }
@@ -72,8 +55,10 @@ object V3ImportSheetsData : Migration {
         keyedTransfers.values.forEach { txn ->
             val otherId = txn["opposingId"]
             val otherTxn = keyedTransfers[otherId]!!
-            if (txn["id"] != otherTxn["opposingId"]) logger.error { "Txn.id != other.opposingId (this=${txn["id"]}, other.opposingId=${otherTxn["opposingId"]}" }
-            if (txn["opposingId"] != otherTxn["id"]) logger.error { "Txn.opposingId != other.id (this.opposingId=${txn["opposingId"]}, other=${otherTxn["id"]}" }
+            if (txn["hashInSheet"] != otherTxn["opposingHashInSheet"]) logger.error { "Txn.hash != other.opposingHash (this.hash=${txn["hashInSheet"]}, other.opposingHash=${otherTxn["opposingHashInSheet"]}" }
+            if (txn["opposingHashInSheet"] != otherTxn["hashInSheet"]) logger.error { "Txn.opposingHash != other.hash (this.opposingHash=${txn["opposingHashInSheet"]}, other.hash=${otherTxn["hashInSheet"]}" }
+            if (txn["id"] != otherTxn["opposingId"]) logger.error { "Txn.id != other.opposingId (this.id=${txn["id"]}, other.opposingId=${otherTxn["opposingId"]}" }
+            if (txn["opposingId"] != otherTxn["id"]) logger.error { "Txn.opposingId != other.id (this.opposingId=${txn["opposingId"]}, other.id=${otherTxn["id"]}" }
         }
 
 
@@ -82,28 +67,29 @@ object V3ImportSheetsData : Migration {
             .groupBy { it["accountId"] as UUID }
             .forEach { (account, txns) ->
                 val file = Paths.get(transactionDataDirectory, "$account.json").toFile()
-                mapper.writeValue(
+                Migration.mapper.writeValue(
                     file,
-                    txns.sortedWith(compareBy ({ (it["transactionInstant"] as String) }, { it["rowInSheet"] as Int })))
+                    txns.sortedWith(compareBy({ (it["transactionInstant"] as String) }, { it["rowInSheet"] as Int }))
+                )
             }
     }
 
-    private fun readAccounts(props: Properties): List<Map<String, Any>> {
+    private fun readAccounts(props: Properties): List<Map<String, Any?>> {
         val accountsDataFilePath: String by props
-        return mapper.readTree(File(accountsDataFilePath))
+        return Migration.mapper.readTree(File(accountsDataFilePath))
             .map { acct ->
                 mapOf(
                     "id" to acct["id"].asText(),
-                    "sheetId" to acct["idInSheet"].asText(),
+                    "sheetId" to acct["idInSheet"]?.asText(),
                     "cards" to acct["cards"]
-                        .filterNot { it["idInSheet"].isNull }
-                        .map {
+                        ?.filter { it.hasNonNull("idInSheet") }
+                        ?.map {
                             mapOf(
                                 "id" to it["id"].asText(),
                                 "accountId" to acct["id"].asText(),
                                 "sheetId" to it["idInSheet"].asText()
                             )
-                        }
+                        }.orEmpty()
                 )
             }
     }
@@ -144,7 +130,8 @@ object V3ImportSheetsData : Migration {
             "amount" to BigDecimal(
                 creditAmount
                     ?: debitAmount
-                    ?: (-99999999999L).also { logger.warn("Txn has no amount: $filepath ($description)") }).movePointLeft(2)
+                    ?: (-99999999999L).also { logger.warn("Txn has no amount: $filepath ($description)") })
+                .movePointLeft(2)
                 .toString(),
             "direction" to if (creditAmount != null) "CREDIT" else "DEBIT",
             "currency" to txnBody["currency"]!!.dynamoString(),

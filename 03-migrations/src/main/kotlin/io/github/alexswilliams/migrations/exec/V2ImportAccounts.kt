@@ -1,41 +1,23 @@
 package io.github.alexswilliams.migrations.exec
 
-import com.fasterxml.jackson.core.util.DefaultIndenter
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.github.alexswilliams.migrations.Migration
 import java.io.File
-import java.nio.file.Files
 import java.util.*
-import kotlin.io.path.Path
 
 
 object V2ImportAccounts : Migration {
     override val description: String
         get() = "Import accounts from google sheets data"
 
-    private val mapper: ObjectMapper by lazy {
-        jacksonObjectMapper()
-            .setDefaultPrettyPrinter(
-                DefaultPrettyPrinter()
-                    .withoutSpacesInObjectEntries()
-                    .withObjectIndenter(DefaultIndenter())
-                    .withArrayIndenter(DefaultIndenter())
-            )
-            .enable(SerializationFeature.INDENT_OUTPUT, SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
-    }
-
     override fun migrate(props: Properties) {
         val sheetsAccountsFile: String by props
 
-        val sheetsAccounts = mapper.readTree(File(sheetsAccountsFile))
+        val sheetsAccounts = Migration.mapper.readTree(File(sheetsAccountsFile))
         val accounts = importAccounts(sheetsAccounts)
 
         val accountsDataFilePath: String by props
-        mapper.writeValue(File(accountsDataFilePath), accounts)
+        Migration.mapper.writeValue(File(accountsDataFilePath), accounts)
     }
 
     private fun importAccounts(sheetsAccounts: JsonNode): List<Any> =
