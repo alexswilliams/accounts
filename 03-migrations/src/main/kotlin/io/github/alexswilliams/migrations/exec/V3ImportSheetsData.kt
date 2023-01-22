@@ -1,5 +1,6 @@
 package io.github.alexswilliams.migrations.exec
 
+import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -24,7 +25,12 @@ object V3ImportSheetsData : Migration {
 
     private val mapper: ObjectMapper by lazy {
         jacksonObjectMapper()
-            .setDefaultPrettyPrinter(DefaultPrettyPrinter())
+            .setDefaultPrettyPrinter(
+                DefaultPrettyPrinter()
+                    .withoutSpacesInObjectEntries()
+                    .withObjectIndenter(DefaultIndenter())
+                    .withArrayIndenter(DefaultIndenter())
+            )
             .enable(SerializationFeature.INDENT_OUTPUT, SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS)
     }
 
@@ -74,7 +80,9 @@ object V3ImportSheetsData : Migration {
             .groupBy { it["accountId"] as UUID }
             .forEach { (account, txns) ->
                 val file = Paths.get(transactionDataDirectory, "$account.json").toFile()
-                mapper.writeValue(file, txns.sortedBy { (it["transactionDate"] as String) + "T" + (it["transactionTime"] as String) })
+                mapper.writeValue(
+                    file,
+                    txns.sortedBy { (it["transactionDate"] as String) + "T" + (it["transactionTime"] as String) })
             }
 
         TODO()
