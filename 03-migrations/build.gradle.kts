@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     implementation(libs.kotlin.logging.jvm)
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.jackson)
     implementation(libs.commons.compress)
 
     runtimeOnly(libs.logback.classic)
@@ -38,7 +38,7 @@ kotlin {
 sourceSets {
     main {
         kotlin.setSrcDirs(setOf("src/main/kotlin"))
-        resources.setSrcDirs(setOf("src/main/resources", "../accounts-data/from-google-sheets"))
+        resources.setSrcDirs(setOf("src/main/resources"))
     }
     test {
         kotlin.setSrcDirs(setOf("src/test/kotlin"))
