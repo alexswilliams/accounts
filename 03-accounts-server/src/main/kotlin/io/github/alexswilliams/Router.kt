@@ -13,6 +13,10 @@ fun Application.configureRouting() {
         get("/accounts") {
             call.respond(AccountsStore.loadAccounts())
         }
+        get("/accounts/refresh") {
+            AccountsStore.storeAccounts(AccountsStore.loadAccounts())
+            call.respond(AccountsStore.loadAccounts())
+        }
 
         // TODO: Front end assets
         static("/static") {

@@ -17,7 +17,7 @@ object V2ImportAccounts : Migration {
         val accounts = importAccounts(sheetsAccounts)
 
         val accountsDataFilePath: String by props
-        Migration.mapper.writeValue(File(accountsDataFilePath), accounts)
+        Migration.mapper.writeValue(File(accountsDataFilePath), accounts.sorted())
     }
 
     private fun importAccounts(sheetsAccounts: JsonNode): List<Any> =
@@ -47,4 +47,17 @@ object V2ImportAccounts : Migration {
                 }.orEmpty()
             )
         }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun List<Any?>.sorted() = (this as List<Map<String, Any?>>)
+        .map {
+            it.plus(
+                "cards" to (it["cards"] as List<Map<String, Any?>>).sortedWith(
+                    compareBy(
+                        { card -> card["startMonth"] as String? },
+                        { card -> (card["id"] as UUID) })
+                )
+            )
+        }
+        .sortedWith(compareBy({ it["institution"] as String }, { it["alias"] as String }))
 }

@@ -40,9 +40,21 @@ object AccountsStore {
 
     private val listOfAccountsType = object : TypeReference<List<AccountOnDisk>>() {}
 
+
     fun loadAccounts(): List<AccountOnDisk> {
         MigrationStatus.validate()
-        return mapper.readValue(accountsDataFile, listOfAccountsType)
+        return mapper.readValue(accountsDataFile, listOfAccountsType).sorted()
     }
 
+    fun storeAccounts(accounts: List<AccountOnDisk>) {
+        MigrationStatus.validate()
+        mapper.writeValue(
+            accountsDataFile,
+            accounts.sorted()
+        )
+    }
+
+    private fun List<AccountOnDisk>.sorted() = this
+        .map { it.copy(cards = it.cards.sortedWith(compareBy({ card -> card.startMonth }, { card -> card.id }))) }
+        .sortedWith(compareBy({ it.institution }, { it.alias }))
 }
