@@ -12,6 +12,129 @@
     <div id="root"></div>
     <noscript>Remember to enable javascript</noscript>
     <script type="module" src="js/index.js"></script>
+    <style>
+        :root {
+            --background-dim: hsl(0, 0%, 91%);
+            --background-light: hsl(0, 0%, 97%);
+            --textcolour: hsl(217, 7%, 21%);
+            --highlight: hsl(97, 42%, 54%);
+            --highlighttext: black;
+            --primary: hsl(197, 68%, 47%);
+            --primarytext: white;
+        }
+
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: var(--background-dim);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            color: var(--textcolour);
+        }
+
+        div {
+            box-sizing: border-box;
+            padding: 5px;
+        }
+
+
+        div#root,
+        div#pagecontainer {
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            border: 0;
+        }
+
+        div#pagecontainer {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+            align-items: stretch;
+            min-height: 500px;
+        }
+
+        div#sidebar {
+            min-width: 16em;
+            flex: 0 0 max-context;
+            padding: 1em 0 1em 1em;
+            background-color: var(--background-light);
+            box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px;
+        }
+
+        div#mainpage {
+            flex: 1 1 auto;
+            padding: 1em;
+            overflow: auto;
+        }
+
+        @media (900px <=width <=1200px) {
+            div#mainpage {
+                padding-left: 5em;
+                padding-right: 5em;
+            }
+        }
+
+        @media (width > 1200px) {
+            div#mainpage {
+                padding-left: 10em;
+                padding-right: 10em;
+            }
+        }
+
+        div.mainpagecontent {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px;
+            padding: 1em;
+        }
+
+        ul.sidebarmenu {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul.sidebarmenu>li {
+            cursor: pointer;
+            margin: 0;
+            padding: 0.4em 0 0.4em 1em;
+        }
+
+        ul.sidebarmenu>li.unselected:hover {
+            background-color: var(--highlight);
+            color: var(--highlighttext)
+        }
+
+        ul.sidebarmenu>li.selected {
+            background-color: var(--primary);
+            color: var(--primarytext);
+        }
+
+        ul.accountsSubMenu {
+            list-style-type: none;
+            margin: 0 0 0 2em;
+            padding: 1em 1em 1em 0;
+            font-size: small;
+        }
+
+        ul.accountsSubMenu>li {
+            cursor: pointer;
+            margin: 0;
+            padding: 0.4em 0 0.4em 1em;
+        }
+
+        ul.accountsSubMenu>li.unselected:hover {
+            background-color: var(--highlight);
+            color: var(--highlighttext)
+        }
+
+        ul.accountsSubMenu>li.selected {
+            background-color: var(--primary);
+            color: var(--primarytext);
+        }
+    </style>
 </body>
 
 </html>
