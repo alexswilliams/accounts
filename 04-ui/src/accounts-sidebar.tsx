@@ -8,8 +8,8 @@ export function AccountsSideBarMenu(props: AccountsSideBarMenuProps) {
     const { accounts, fetchAccounts } = useContext(context)
     const [selectedSubItem, setSelectedSubItem] = useState<string | undefined>(undefined)
 
-    if (accounts === undefined && fetchAccounts !== undefined) {
-        fetchAccounts()
+    if (accounts === undefined) {
+        fetchAccounts?.()
         return <div className='loading'>Loading...</div>
     }
 

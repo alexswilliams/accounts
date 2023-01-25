@@ -4,9 +4,9 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "bundle-debug": "esbuild --bundle src/index.tsx --outfile=dist/index.js",
-    "bundle": "esbuild --bundle --minify --sourcemap --target=firefox100 --legal-comments=none src/index.tsx --outfile=dist/index.js",
-    "start": "esbuild --target=firefox100 src/index.tsx --servedir=public --outdir=public/js --bundle",
+    "bundle-debug": "esbuild --bundle src/index.tsx --outfile=dist/index.js --tree-shaking=true",
+    "bundle": "esbuild --bundle --minify --sourcemap --target=firefox100 --legal-comments=none src/index.tsx --outfile=dist/index.js --tree-shaking=true",
+    "start": "esbuild --target=firefox100 src/index.tsx  --minify --sourcemap --servedir=public --outdir=public/js --bundle --tree-shaking=true",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
