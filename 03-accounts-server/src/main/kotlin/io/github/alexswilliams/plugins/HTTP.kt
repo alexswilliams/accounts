@@ -11,6 +11,6 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Post)
         allowMethod(HttpMethod.Delete)
-        this.allowHost("localhost")
+        anyHost()
     }
 }

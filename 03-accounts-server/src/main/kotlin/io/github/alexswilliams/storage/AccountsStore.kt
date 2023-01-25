@@ -7,6 +7,7 @@ import io.github.alexswilliams.model.CardNetwork
 import java.io.File
 import java.time.LocalDate
 import java.util.*
+import java.util.concurrent.atomic.AtomicReference
 
 data class CardOnDisk(
     val id: UUID,
@@ -40,18 +41,25 @@ object AccountsStore {
 
     private val listOfAccountsType = object : TypeReference<List<AccountOnDisk>>() {}
 
+    private val storeCache = AtomicReference<List<AccountOnDisk>?>(null)
 
     fun loadAccounts(): List<AccountOnDisk> {
         MigrationStatus.validate()
-        return mapper.readValue(accountsDataFile, listOfAccountsType).sorted()
+        return synchronized(storeCache) {
+            storeCache.get()
+                ?: mapper.readValue(accountsDataFile, listOfAccountsType)
+                    .sorted()
+                    .also { storeCache.set(it) }
+        }
     }
 
     fun storeAccounts(accounts: List<AccountOnDisk>) {
         MigrationStatus.validate()
-        mapper.writeValue(
-            accountsDataFile,
-            accounts.sorted()
-        )
+        synchronized(storeCache) {
+            val sortedAccounts = accounts.sorted()
+            mapper.writeValue(accountsDataFile, sortedAccounts)
+            storeCache.set(sortedAccounts)
+        }
     }
 
     private fun List<AccountOnDisk>.sorted() = this
