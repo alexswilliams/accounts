@@ -24,21 +24,42 @@ export function Account(props: AccountProps) {
     }
     const transactionList = (transactions?.data ?? {})[account.id] ?? []
 
-    return <div key={props.id} className='mainpagecontent'>
-        <dl>
-            <dt>Alias</dt><dd>{account.alias}</dd>
-            <dt>Account Type</dt><dd>{account.accountType}</dd>
-            <dt>Currency</dt><dd>{account.primaryCurrency}</dd>
-            <dt>With</dt><dd>{account.institution}</dd>
-            {(account.accountNumber !== undefined) && (<dt>Account Number</dt>)}
-            {(account.accountNumber !== undefined) && (<dd>{formatAccountNumber(account.accountNumber, account.sortCode)}</dd>)}
-        </dl>
-        <h1>Transactions</h1>
-        <TransactionTree transactions={transactionList} />
+    return <div key={props.id}>
+        <div className='mainpagecontent'>
+            <header>{account.alias}</header>
+            <div style={{ display: 'flex' }}>
+                <table>
+                    {(account.accountNumber !== undefined) && (<tr><td>Account Number</td><td>{formatAccountNumber(account.accountNumber, account.sortCode)}</td></tr>)}
+                    <tr><td>Currency</td><td>{account.primaryCurrency}</td></tr>
+                    <tr><td>Account Type</td><td>{formatAccountType(account.accountType)}</td></tr>
+                    <tr><td>With</td><td>{account.institution}</td></tr>
+                    <tr><td>Status</td><td>Open</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div className='mainpagecontent'>
+            <h1>Transactions</h1>
+            <TransactionTree transactions={transactionList} />
+        </div >
     </div>
 }
 
-function formatAccountNumber(num: string, sortCode?: string) {
+function formatAccountNumber(num: string, sortCode?: string): string {
     if (sortCode === undefined) return num
     return `${sortCode} ${num}`
+}
+
+function formatAccountType(accType: string): string {
+    return {
+        'CURRENT_ACCOUNT': 'Current Account',
+        'AGREEMENT_BETWEEN_FRIENDS': 'Agreement Between Friends',
+        'CASH_ISA': 'Cash ISA',
+        'FINANCE_AGREEMENT': 'Finance Agreement',
+        'FIXED_TERM_LOAN': 'Fixed Term Loan',
+        'PAYPAL': 'PayPal',
+        'CREDIT_CARD': 'Credit Card',
+        'PREPAID_DEBIT_CARD': 'Prepaid Debit Card',
+        'FIXED_SAVINGS_ACCOUNT': 'Fixed Term Saver',
+    }[accType] ?? accType
 }

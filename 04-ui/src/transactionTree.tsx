@@ -66,11 +66,4 @@ const transactionComparator = (a: TransactionModel, b: TransactionModel) =>
 const GBP = Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' })
 function formatMinorUnits(minorUnits: number): string {
     return GBP.format(minorUnits / 100)
-    const sign = minorUnits < 0 ? '-' : ''
-    const asString = String(Math.abs(minorUnits))
-    if (asString.length == 1) return `${sign}0.0${asString}`
-    if (asString.length == 2) return `${sign}0.${asString}`
-    const major = asString.slice(0, -2)
-    const minor = asString.slice(-2)
-    return sign + major + '.' + minor
 }
