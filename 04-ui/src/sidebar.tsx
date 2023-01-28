@@ -1,11 +1,11 @@
 import { useState } from "react"
-import { AccountsSideBarMenu } from "./accounts-sidebar";
+import { AccountsSideBarMenu } from "./accounts-sidebar"
 
 type SideBarProps = {
-    onClick: (nextPage: string, nextSubPage?: string) => void;
+    onClick: (nextPage: string, nextSubPage?: string) => void
 }
 export function SideBar(props: SideBarProps) {
-    const [selectedItem, setSelectedItem] = useState<string | undefined>(undefined)
+    const [selectedItem, setSelectedItem] = useState<string | undefined>()
 
     const doItemClick = (name: string) => {
         setSelectedItem(name)
@@ -24,11 +24,10 @@ export function SideBar(props: SideBarProps) {
 
 
 type SideBarItemProps = {
-    onClick: () => void;
-    selected: boolean;
-    displayString: string;
+    onClick: () => void
+    selected: boolean
+    displayString: string
 }
-
 function SideBarItem(props: SideBarItemProps) {
     return <li
         onClick={props.onClick}
