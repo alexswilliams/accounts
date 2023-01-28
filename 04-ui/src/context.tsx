@@ -28,14 +28,14 @@ export type AccountModel = {
 export type TransactionModel = {
     id: string
     opposingId: string
-    amount: string
+    amountMinorUnits: number
     currency: string
     direction: string
     transactionInstant: string
     descriptionInSheet: string
     typeInSheet: string
     typeCodeInSheet: string
-    runningBalanceHint: string
+    runningBalanceHintMinorUnits: number
 }
 
 type AppContext = {
@@ -75,7 +75,7 @@ export function GlobalContext(props: ServiceStoreProps) {
         try {
             const res = await fetch('http://localhost:8080/transactions', { signal: AbortSignal.timeout(2000) })
             if (res.ok) {
-                setTransactions({ inFlight: false, data: await res.json(), error: undefined })
+                setTransactions({ inFlight: false, data: toTransactionModel(await res.json()), error: undefined })
             } else {
                 console.log(res)
                 setTransactions({ inFlight: false, data: undefined, error: res.statusText })
@@ -89,4 +89,24 @@ export function GlobalContext(props: ServiceStoreProps) {
     return <context.Provider value={{ accounts, fetchAccounts, transactions, fetchTransactions }} >
         {props.children}
     </context.Provider>
+}
+
+function toTransactionModel(data: Record<string, Record<string, unknown>[]>): Record<string, TransactionModel[]> {
+    const result: Record<string, TransactionModel[]> = {}
+    Object.entries(data).forEach(([accountId, txnList]) => {
+        result[accountId] = txnList.map(it => {
+            return Object.assign({}, it, {
+                amountMinorUnits: stringToMinorUnits(it.amount as string),
+                runningBalanceHintMinorUnits: stringToMinorUnits(it.runningBalanceHint as string)
+            }) as TransactionModel
+        })
+    })
+    return result
+}
+
+function stringToMinorUnits(str: string): number {
+    const parts = str.split('.')
+    const major = +parts[0] * 100
+    const minor = (parts.length > 0) ? +parts[1] : 0
+    return major + minor
 }

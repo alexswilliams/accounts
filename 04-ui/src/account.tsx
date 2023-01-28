@@ -1,5 +1,6 @@
 import { useContext } from "react"
 import { context } from "./context"
+import { TransactionTree } from "./transactionTree"
 
 type AccountProps = {
     id?: string
@@ -23,7 +24,7 @@ export function Account(props: AccountProps) {
     }
     const transactionList = (transactions?.data ?? {})[account.id] ?? []
 
-    return <div className='mainpagecontent'>
+    return <div key={props.id} className='mainpagecontent'>
         <dl>
             <dt>Alias</dt><dd>{account.alias}</dd>
             <dt>Account Type</dt><dd>{account.accountType}</dd>
@@ -33,11 +34,7 @@ export function Account(props: AccountProps) {
             {(account.accountNumber !== undefined) && (<dd>{formatAccountNumber(account.accountNumber, account.sortCode)}</dd>)}
         </dl>
         <h1>Transactions</h1>
-        <table>
-            {transactionList.map(it =>
-                <tr><td>{it.transactionInstant}</td><td>{it.descriptionInSheet}</td><td>{it.amount}</td><td>{it.direction}</td></tr>
-            )}
-        </table>
+        <TransactionTree transactions={transactionList} />
     </div>
 }
 
