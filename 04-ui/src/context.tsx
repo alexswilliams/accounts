@@ -37,6 +37,9 @@ export type TransactionModel = {
     typeCodeInSheet: string
     runningBalanceHintMinorUnits: number
 }
+export function signedAmount(txn: TransactionModel): number {
+    return txn.direction === 'CREDIT' ? txn.amountMinorUnits : -txn.amountMinorUnits
+}
 
 type AppContext = {
     accounts?: RequestState<AccountModel[]>

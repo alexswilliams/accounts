@@ -1,31 +1,38 @@
 import { useContext } from "react"
-import { context } from "./context"
+import { AccountModel, context, TransactionModel } from "./context"
 import { TransactionTree } from "./transactionTree"
 
 type AccountProps = {
     id?: string
 }
-export function Account(props: AccountProps) {
-    if (props.id === undefined) return <></>
-
+export function Account({ id }: AccountProps) {
+    if (id === undefined) return <></>
     const { accounts, fetchAccounts, transactions, fetchTransactions } = useContext(context)
-    if (accounts === undefined || accounts.inFlight === true) {
-        fetchAccounts?.()
-        return <div>Loading accounts...</div>
+    if (accounts === undefined) fetchAccounts?.()
+    if (transactions === undefined) fetchTransactions?.()
+
+    const loadingAccounts = (accounts === undefined || accounts.inFlight === true)
+    const loadingTransactions = (transactions === undefined || transactions.inFlight === true)
+    if (loadingAccounts || loadingTransactions) {
+        return <div>Loading...</div>
     }
-    const account = (accounts.data ?? []).find(it => it.id == props.id)
+    const account = (accounts.data ?? []).find(it => it.id == id)
     if (account === undefined) {
         return <h1>Could not find account</h1>
     }
-
-    if (transactions === undefined || transactions.inFlight === true) {
-        fetchTransactions?.()
-        return <div>Loading transactions...</div>
-    }
     const transactionList = (transactions?.data ?? {})[account.id] ?? []
 
-    return <div key={props.id}>
-        <div className='mainpagecontent'>
+    return <AccountLayout account={account} transactionList={transactionList} />
+}
+
+
+type AccountLayoutProps = {
+    account: AccountModel
+    transactionList: TransactionModel[]
+}
+function AccountLayout({ account, transactionList }: AccountLayoutProps) {
+    return <div key={account.id}>
+        <div className='mainPageContent'>
             <header>{account.alias}</header>
             <div style={{ display: 'flex' }}>
                 <table>
@@ -38,8 +45,8 @@ export function Account(props: AccountProps) {
             </div>
         </div>
 
-        <div className='mainpagecontent'>
-            <h1>Transactions</h1>
+        <div className='mainPageContent'>
+            <header>Transactions</header>
             <TransactionTree transactions={transactionList} />
         </div >
     </div>

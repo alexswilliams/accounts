@@ -19,7 +19,6 @@ body {
 
 div {
     box-sizing: border-box;
-    padding: 5px;
 }
 
 
@@ -50,31 +49,29 @@ div#sidebar {
 
 div#mainpage {
     flex: 1 1 auto;
-    padding: 1em;
+    padding: 1em 2em;
     overflow: auto;
 }
 
-@media (900px <=width <=1200px) {
-    div#mainpage {
-        padding-left: 5em;
-        padding-right: 5em;
-    }
-}
-
-@media (width > 1200px) {
-    div#mainpage {
-        padding-left: 10em;
-        padding-right: 10em;
-    }
-}
-
-div.mainpagecontent {
+div.mainPageContent {
     background-color: white;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px;
     padding: 1em;
     margin-bottom: 2em;
+    min-width: 750px;
 }
+
+div.mainPageContent>header {
+    margin: -1em -1em 1em -1em;
+    padding: 1em 2em;
+    border-radius: 8px 8px 0 0;
+    background-color: var(--textcolour);
+    color: var(--background-light);
+    font-weight: 600;
+    font-variant: small-caps;
+}
+
 
 ul.sidebarmenu {
     list-style-type: none;
@@ -125,12 +122,105 @@ td {
     padding-left: 1em;
 }
 
-div.mainpagecontent>header {
-    margin: -1em -1em 1em -1em;
-    padding: 1em 2em;
-    border-radius: 8px 8px 0 0;
-    background-color: var(--textcolour);
-    color: var(--background-light);
+
+div.unfurlable>header:hover {
+    background-color: var(--highlight);
+    color: var(--highlighttext);
+}
+
+div.unfurlable>header {
+    cursor: pointer;
+}
+
+
+div.negativeMoney {
+    color: hsl(0, 100%, 40%);
+}
+
+div.yearCard {
+    background-color: var(--background-light);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px;
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
+div.yearCard>header {
+    margin: -0.5em -0.5em -0.5em -0.5em;
+    padding: 0.5em 1em;
+    color: var(--textcolour);
+    font-weight: 400;
+
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+div.yearCard>div.yearCardBody {
+    padding-top: 1em;
+    margin-top: 1em;
+    border-top: 1px solid hsl(0, 0, 80%);
+}
+
+div.yearCard div.year {
+    font-weight: 500;
+    font-size: 1.3em;
+}
+
+div.monthCard {
+    padding: 0.5em 0;
+    margin-bottom: 0.5em;
+}
+
+div.monthCard>header {
+    background-color: var(--background-light);
+    color: var(--textcolour);
+    font-weight: 400;
+    font-size: 0.8em;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+div.monthCard div.month {
+    font-weight: 500;
+    font-size: 1.2em;
+}
+
+div.monthCardBody {
+    padding: 0.5em 1em;
+    background-color: white;
+    font-size: 0.8em;
+}
+
+div.monthCardBody div.transaction {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 1.5em;
+    margin-right: 4em;
+}
+
+div.monthCardBody div.transaction:hover {
+    background-color: var(--background-light);
+}
+
+div.monthCardBody div.daysTransactions {
+    margin-bottom: 0.6em;
+}
+
+div.monthCardBody div.daysTransactions>div.date {
     font-weight: 600;
-    font-variant: small-caps;
+}
+
+div.monthCardBody div.daysTransactions>div.dailyClose {
+    width: 100%;
+    text-align: right;
 }
