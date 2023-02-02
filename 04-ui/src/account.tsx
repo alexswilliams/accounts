@@ -16,6 +16,10 @@ export function Account({ id }: AccountProps) {
     if (loadingAccounts || loadingTransactions) {
         return <div>Loading...</div>
     }
+    if (accounts.error !== undefined || transactions.error !== undefined) {
+        return <div className='apiError'>Error while fetching: {accounts.error ?? transactions.error}</div>
+    }
+
     const account = (accounts.data ?? []).find(it => it.id == id)
     if (account === undefined) {
         return <h1>Could not find account</h1>

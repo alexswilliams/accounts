@@ -34,12 +34,12 @@ type RouterProps = {
     page: string
     subPage?: string
 }
-function Router(props: RouterProps) {
+function Router({ page, subPage }: RouterProps) {
     const pages: Record<string, () => ReactElement<any, any>> = {
-        'accounts': () => <Account id={props.subPage} />
+        'accounts': () => <Account id={subPage} />
     }
-    if (!(props.page in pages)) {
-        return <h1>Page not found: {props.page}</h1>
+    if (!(page in pages)) {
+        return <h1>Page not found: {page}</h1>
     }
-    return pages[props.page]()
+    return pages[page]()
 }

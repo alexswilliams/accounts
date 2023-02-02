@@ -4,16 +4,16 @@ import { AccountsSideBarMenu } from "./accounts-sidebar"
 type SideBarProps = {
     onClick: (nextPage: string, nextSubPage?: string) => void
 }
-export function SideBar(props: SideBarProps) {
+export function SideBar({ onClick }: SideBarProps) {
     const [selectedItem, setSelectedItem] = useState<string | undefined>()
 
     const doItemClick = (name: string) => {
         setSelectedItem(name)
-        props.onClick(name)
+        onClick(name)
     }
 
     const doSubItemClick = (subItem: string) => {
-        props.onClick(selectedItem!, subItem)
+        onClick(selectedItem!, subItem)
     }
 
     return <ul className="sidebarmenu">
@@ -28,9 +28,9 @@ type SideBarItemProps = {
     selected: boolean
     displayString: string
 }
-function SideBarItem(props: SideBarItemProps) {
+function SideBarItem({ onClick, selected, displayString }: SideBarItemProps) {
     return <li
-        onClick={props.onClick}
-        className={props.selected ? 'selected' : 'unselected'}
-    >{props.displayString}</li>
+        onClick={onClick}
+        className={selected ? 'selected' : 'unselected'}
+    >{displayString}</li>
 }

@@ -4,7 +4,7 @@ import { AccountModel, context } from "./context"
 type AccountsSideBarMenuProps = {
     onClick: (subItem: string) => void
 }
-export function AccountsSideBarMenu(props: AccountsSideBarMenuProps) {
+export function AccountsSideBarMenu({ onClick }: AccountsSideBarMenuProps) {
     const { accounts, fetchAccounts } = useContext(context)
     const [selectedSubItem, setSelectedSubItem] = useState<string | undefined>()
 
@@ -18,7 +18,7 @@ export function AccountsSideBarMenu(props: AccountsSideBarMenuProps) {
 
     const doClick = (id: string) => {
         setSelectedSubItem(id)
-        props.onClick(id)
+        onClick(id)
     }
 
     return <AccountsSideBarMenuLayout accounts={accounts.data ?? []} doClick={doClick} selectedId={selectedSubItem} />
@@ -30,15 +30,14 @@ type AccountsSideBarMenuLayoutProps = {
     doClick: (id: string) => void
     selectedId?: string
 }
-function AccountsSideBarMenuLayout(props: AccountsSideBarMenuLayoutProps) {
-    const accountElements = props.accounts.map(it =>
-        <li
-            key={it.id}
-            onClick={() => props.doClick(it.id)}
-            className={props.selectedId === it.id ? 'selected' : 'unselected'}
-        >{it.alias}</li>
-    )
+function AccountsSideBarMenuLayout({ accounts, doClick, selectedId }: AccountsSideBarMenuLayoutProps) {
     return <ul className='accountsSubMenu'>
-        {accountElements}
+        {accounts.map(it =>
+            <li
+                key={it.id}
+                onClick={() => doClick(it.id)}
+                className={selectedId === it.id ? 'selected' : 'unselected'}
+            >{it.alias}</li>
+        )}
     </ul>
 }
