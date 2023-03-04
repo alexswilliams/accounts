@@ -25,6 +25,10 @@ fun Application.configureRouting() {
             AccountsStore.storeAccounts(AccountsStore.loadAccounts())
             call.respond(AccountsStore.loadAccounts())
         }
+        get("/transactions/refresh") {
+            TransactionsStore.storeTransactions(TransactionsStore.loadTransactions())
+            call.respond(TransactionsStore.loadTransactions())
+        }
 
         // TODO: Front end assets
         static("/static") {
