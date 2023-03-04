@@ -2,8 +2,8 @@ import de.fayard.refreshVersions.core.FeatureFlag.*
 
 pluginManagement {
     plugins {
-        kotlin("jvm") version "1.8.0"
-        id("io.ktor.plugin") version "2.2.2"
+        kotlin("jvm") version "1.8.10"
+        id("io.ktor.plugin") version "2.2.4"
     }
 }
 plugins {
