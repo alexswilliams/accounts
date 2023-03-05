@@ -8,10 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.addSerializer
 import io.github.alexswilliams.plugins.configureHTTP
 import io.github.alexswilliams.plugins.configureMonitoring
 import io.github.alexswilliams.plugins.configureSerialization
@@ -19,10 +17,6 @@ import io.github.alexswilliams.storage.MigrationStatus
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import java.text.SimpleDateFormat
-import java.time.DateTimeException
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 
 fun main() {
     MigrationStatus.validate()
