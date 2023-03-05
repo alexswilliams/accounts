@@ -32,10 +32,16 @@ export type TransactionModel = {
     currency: string
     direction: string
     transactionInstant: string
-    descriptionInSheet: string
+    descriptionInSheet?: string
     typeInSheet: string
     typeCodeInSheet: string
-    runningBalanceHintMinorUnits: number
+    runningBalanceHintMinorUnits?: number
+    // TODO: temporary
+    accountId: string
+    hashInSheet: string
+    opposingHashInSheet?: string
+    rowInSheet: number
+    cardId?: string
 }
 export function signedAmount(txn: TransactionModel): number {
     return txn.direction === 'CREDIT' ? txn.amountMinorUnits : -txn.amountMinorUnits
@@ -100,7 +106,7 @@ function toTransactionModel(data: Record<string, Record<string, unknown>[]>): Re
         result[accountId] = txnList.map(it => {
             return Object.assign({}, it, {
                 amountMinorUnits: stringToMinorUnits(it.amount as string),
-                runningBalanceHintMinorUnits: stringToMinorUnits(it.runningBalanceHint as string)
+                runningBalanceHintMinorUnits: it.runningBalanceHint === undefined ? undefined : stringToMinorUnits(it.runningBalanceHint as string)
             }) as TransactionModel
         })
     })
@@ -111,5 +117,5 @@ function stringToMinorUnits(str: string): number {
     const parts = str.split('.')
     const major = +parts[0] * 100
     const minor = (parts.length > 0) ? +parts[1] : 0
-    return major + minor
+    return (str[0] === '-') ? major - minor : major + minor
 }

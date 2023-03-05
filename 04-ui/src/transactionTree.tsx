@@ -81,25 +81,26 @@ function YearViewBody({ year, transactions, yearOpening }: YearViewBodyProps) {
     }
     return <div className='yearCardBody'>
         {months.map(month => {
-            return <MonthView month={+month} transactions={txnsPerMonth[month]} opening={openingBalances[month]} closing={closingBalances[month]} />
+            return <MonthView month={+month} year={year} transactions={txnsPerMonth[month]} opening={openingBalances[month]} closing={closingBalances[month]} />
         })}
     </div>
 }
 
 type MonthViewProps = {
     month: number
+    year: number
     transactions: TransactionModel[]
     opening: number
     closing: number
 }
-function MonthView({ month, transactions, opening, closing }: MonthViewProps) {
+function MonthView({ month, year, transactions, opening, closing }: MonthViewProps) {
     const [unfurled, setUnfurled] = useState<boolean>(false)
     const totalCredits = transactions.filter(it => it.direction === 'CREDIT').map(it => it.amountMinorUnits).reduce((acc, it) => acc + it, 0)
     const totalDebits = transactions.filter(it => it.direction === 'DEBIT').map(it => it.amountMinorUnits).reduce((acc, it) => acc + it, 0)
     const unfurlableClass = (transactions.length > 0) ? 'unfurlable' : undefined
     return <div className={['monthCard', unfurlableClass].join(' ')} key={month}>
         <header onClick={() => setUnfurled(!unfurled)}>
-            <div className='month' style={{ flex: '0 0 8em' }}>{monthNames[month - 1]}</div>
+            <div className='month' style={{ flex: '0 0 8em' }}>{monthNames[month - 1]} {`${year}`.slice(2)}</div>
             <div style={{ flex: '1 1 5em', display: 'flex', flexDirection: 'column' }}>
                 <div>Net: <Money minorUnits={closing - opening} signDisplay={'exceptZero'} /></div>
             </div>
@@ -131,19 +132,60 @@ function TransactionTable({ transactions, opening }: TransactionTableProps) {
         startBalance = txnsForDay.reduce((acc, txn) => acc + signedAmount(txn), startBalance)
         return (<div className='daysTransactions' key={date}>
             <div className='date'>{date} (+<Money minorUnits={totalCredits} /> -<Money minorUnits={totalDebits} />)</div>
-            {txnsForDay.map(txn => {
-                return <div className='transaction'>
-                    <div style={{ flex: '0 0 3em' }}>{txn.typeCodeInSheet}</div>
-                    <div style={{ flex: '0 0 13em' }}>{txn.typeInSheet}</div>
-                    <div style={{ flex: '1 0 auto' }}>{txn.descriptionInSheet}</div>
-                    <div style={{ flex: '0 0 10em', textAlign: 'right' }}><Money minorUnits={signedAmount(txn)} signDisplay={'always'} /></div>
-                </div>
-            })}
+            {txnsForDay.map(txn => <Transaction transaction={txn} balanceHighlighted={startBalance === txn.runningBalanceHintMinorUnits || -startBalance === txn.runningBalanceHintMinorUnits} key={txn.id} />)}
             <div className='dailyClose'><Money minorUnits={startBalance} /></div>
         </div>
         )
     })
     return <div>{dayElements}</div>
+}
+
+type TransactionProps = {
+    transaction: TransactionModel
+    balanceHighlighted: boolean
+}
+function Transaction({ transaction, balanceHighlighted }: TransactionProps): JSX.Element {
+    const [unfurled, setUnfurled] = useState<boolean>(false)
+    return (<div className='transaction unfurlable'>
+        <header onClick={() => setUnfurled(!unfurled)}>
+            <div style={{ flex: '0 0 3em' }}>{transaction.typeCodeInSheet}</div>
+            <div style={{ flex: '0 0 13em' }}>{transaction.typeInSheet}</div>
+            <div style={{ flex: '1 0 auto' }}>{transaction.descriptionInSheet}</div>
+            <div style={{ flex: '0 0 10em', textAlign: 'right' }}><Money minorUnits={signedAmount(transaction)} signDisplay={'always'} /></div>
+            <div className={balanceHighlighted ? 'highlighted' : ''} style={{ flex: '0 0 10em', textAlign: 'right' }}>{transaction.runningBalanceHintMinorUnits !== undefined
+                ? <Money minorUnits={transaction.runningBalanceHintMinorUnits} signDisplay={'auto'} />
+                : <></>}</div>
+        </header>
+        {unfurled && (<TransactionDetailsTable transaction={transaction} />)}
+    </div>)
+}
+
+type TransactionDetailsTableProps = {
+    transaction: TransactionModel
+}
+function TransactionDetailsTable({ transaction }: TransactionDetailsTableProps): JSX.Element {
+    return <div className='transactionDetails'>
+        <table>
+            <tbody>
+                <tr><td>Transaction ID</td><td>{transaction.id}</td></tr>
+                <tr><td>Account ID</td><td>{transaction.accountId}</td></tr>
+                <tr><td>Opposing ID</td><td>{transaction.opposingId}</td></tr>
+                <tr><td>Amount</td><td>{transaction.amountMinorUnits} (<Money minorUnits={signedAmount(transaction)} currency={transaction.currency} signDisplay={'always'} />)</td></tr>
+                <tr><td>Currency</td><td>{transaction.currency}</td></tr>
+                <tr><td>Direction</td><td>{transaction.direction}</td></tr>
+                <tr><td>Transaction Instant</td><td>{transaction.transactionInstant}</td></tr>
+                <tr><td>Description in Sheet</td><td>{transaction.descriptionInSheet}</td></tr>
+                <tr><td>typeInSheet</td><td>{transaction.typeInSheet}</td></tr>
+                <tr><td>typeCodeInSheet</td><td>{transaction.typeCodeInSheet}</td></tr>
+                <tr><td>runningBalanceHint</td><td>{transaction.runningBalanceHintMinorUnits} {transaction.runningBalanceHintMinorUnits !== undefined ?
+                    <>(<Money minorUnits={transaction.runningBalanceHintMinorUnits} signDisplay={'always'} />)</>
+                    : <></>}</td></tr>
+                <tr><td>hashInSheet</td><td>{transaction.hashInSheet}</td></tr>
+                <tr><td>opposingHashInSheet</td><td>{transaction.opposingHashInSheet}</td></tr>
+                <tr><td>rowInSheet</td><td>{transaction.rowInSheet}</td></tr>
+                <tr><td>Card ID</td><td>{transaction.cardId}</td></tr>
+            </tbody></table>
+    </div>
 }
 
 

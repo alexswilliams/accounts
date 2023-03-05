@@ -201,7 +201,20 @@ div.monthCardBody {
     margin-left: 2em;
 }
 
-div.monthCardBody div.transaction {
+div.monthCardBody div.daysTransactions {
+    margin-bottom: 0.6em;
+}
+
+div.monthCardBody div.daysTransactions div.date {
+    font-weight: 600;
+}
+
+div.monthCardBody div.daysTransactions div.dailyClose {
+    width: 100%;
+    text-align: right;
+}
+
+div.monthCardBody div.transaction header {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -211,19 +224,17 @@ div.monthCardBody div.transaction {
     margin-right: 4em;
 }
 
-div.monthCardBody div.transaction:hover {
+div.monthCardBody div.transaction header:hover {
     background-color: var(--background-light);
 }
 
-div.monthCardBody div.daysTransactions {
-    margin-bottom: 0.6em;
+div.transaction div.transactionDetails {
+    margin-left: 3em;
+    border-left: 1px solid var(--textcolour);
+    background-color: var(--background-dim);
 }
 
-div.monthCardBody div.daysTransactions>div.date {
-    font-weight: 600;
-}
-
-div.monthCardBody div.daysTransactions>div.dailyClose {
-    width: 100%;
-    text-align: right;
+div.highlighted {
+    color: green;
+    font-weight: bold;
 }
