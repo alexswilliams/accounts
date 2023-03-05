@@ -140,7 +140,7 @@ div.negativeMoney {
 div.yearCard {
     background-color: var(--background-light);
     box-shadow: rgba(0, 0, 0, 0.1) 0 0 0 1px;
-    padding: 0.5em;
+    padding: 1em;
     margin-bottom: 1em;
 }
 
@@ -179,6 +179,7 @@ div.monthCard>header {
     color: var(--textcolour);
     font-weight: 400;
     font-size: 0.8em;
+    padding: 0.5em 0.5em;
 
     display: flex;
     flex-direction: row;
@@ -196,6 +197,8 @@ div.monthCardBody {
     padding: 0.5em 1em;
     background-color: white;
     font-size: 0.8em;
+    margin-top: 1em;
+    margin-left: 2em;
 }
 
 div.monthCardBody div.transaction {
