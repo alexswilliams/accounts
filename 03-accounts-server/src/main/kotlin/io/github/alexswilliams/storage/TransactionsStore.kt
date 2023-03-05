@@ -27,7 +27,7 @@ data class TransactionOnDisk(
     val descriptionInSheet: String?,
     val typeInSheet: String,
     val typeCodeInSheet: String,
-    val runningBalanceHint: String,
+    val runningBalanceHint: String?,
     val hashInSheet: String,
     val opposingHashInSheet: String?,
     val rowInSheet: Int,
