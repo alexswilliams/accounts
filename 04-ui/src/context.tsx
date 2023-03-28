@@ -22,6 +22,8 @@ export type AccountModel = {
     primaryCurrency: string
     sortCode?: string
     accountNumber?: string
+    bic?: string
+    iban?: string
     cards: Record<string, CardModel>[]
 }
 

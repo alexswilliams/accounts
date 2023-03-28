@@ -41,10 +41,11 @@ function AccountLayout({ account, transactionList }: AccountLayoutProps) {
             <div style={{ display: 'flex' }}>
                 <table>
                     {(account.accountNumber !== undefined) && (<tr><td>Account Number</td><td>{formatAccountNumber(account.accountNumber, account.sortCode)}</td></tr>)}
+                    {(account.iban !== undefined) && (<tr><td>IBAN</td><td>{account.iban}</td></tr>)}
+                    {(account.bic !== undefined) && (<tr><td>BIC</td><td>{account.bic}</td></tr>)}
                     <tr><td>Currency</td><td>{account.primaryCurrency}</td></tr>
                     <tr><td>Account Type</td><td>{formatAccountType(account.accountType)}</td></tr>
                     <tr><td>With</td><td>{account.institution}</td></tr>
-                    <tr><td>Status</td><td>Open</td></tr>
                 </table>
             </div>
         </div>

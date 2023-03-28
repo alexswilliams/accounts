@@ -30,6 +30,8 @@ data class AccountOnDisk(
     val idInSheet: String?,
     val sortCode: String?,
     val accountNumber: String?,
+    val bic: String?,
+    val iban: String?,
     val primaryCurrency: String,
     val cards: List<CardOnDisk>
 )
