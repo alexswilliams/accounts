@@ -9,7 +9,8 @@ ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 [versions]
 
 ktor = "2.2.4"
-kotlin = "1.8.10"
+kotlin = "1.8.20"
+jackson = "2.14.2"
 
 [libraries]
 
@@ -23,18 +24,18 @@ ktor-serialization-jackson-jvm = { group = "io.ktor", name = "ktor-serialization
 ktor-server-netty-jvm = { group = "io.ktor", name = "ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-tests-jvm = { group = "io.ktor", name = "ktor-server-tests-jvm", version.ref = "ktor" }
 
-jackson = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.14.2" }
-jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "2.14.2" }
+jackson = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
+jackson-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version = "jackson" }
 
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version = "5.9.2" }
 kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
 
-logback-classic = "ch.qos.logback:logback-classic:1.4.5"
+logback-classic = "ch.qos.logback:logback-classic:1.4.6"
 
 kotlin-scripting-compiler-embeddable = { group = "org.jetbrains.kotlin", name = "kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
 
 kotlin-logging-jvm = "io.github.microutils:kotlin-logging-jvm:3.0.5"
 
-commons-compress = "org.apache.commons:commons-compress:1.22"
+commons-compress = "org.apache.commons:commons-compress:1.23.0"
 
 postgresql = "org.postgresql:postgresql:42.5.1"
