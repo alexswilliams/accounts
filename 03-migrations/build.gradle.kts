@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION") // suppress intellij 2022.3 bug
 plugins {
     alias(libs.plugins.kotlin)
 }
